@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ECCHealthcheck.Models
 {
-    public class folderModel
+    public class archvDbModel
     {
-        public string name { get; set; }
-        public int count { get; set; }
+        public archvJbModel importDb { get; set; }
+        public archvJbModel xportDb { get; set; }
     }
 }

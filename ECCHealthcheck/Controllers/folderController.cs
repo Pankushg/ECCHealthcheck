@@ -7,54 +7,32 @@ using System.Net.Http;
 using System.Web.Http;
 using ECCHealthcheck.Models;
 
+
 namespace ECCHealthcheck.Controllers
 {
     public class folderController : ApiController
     {
         // GET: api/folder
-        public List<string> Get()
+        public IEnumerable<folderModel> Get()
         {
-            folderModel fm = new folderModel();
-            List<string> ls = new List<string>();
-            string[] directories = Directory.GetDirectories(@"\\GA016VK001\DataTrans\Inbound\");
-            foreach (string s in directories) //getting all folders
+            List<folderModel> ls = new List<folderModel>();
+            string[] directories = Directory.GetDirectories(@"\\GA016VAA32\DataTrans\Inbound");
+            foreach (string dir in directories) //getting all folders
             {
-                string[] f = Directory.GetFiles(s);
-                if (Directory.GetFiles(s).Count() > 1)
+                folderModel foldMod = new folderModel();
+                if (Directory.GetFiles(dir).Count() > 1)
                 {
-                    ls.Add(s.Substring(31));
+                    foldMod.name = dir.Substring(31);
+                    foldMod.count = Directory.GetFiles(dir).Count();
+                    ls.Add(foldMod);
                 }
-                else if (Directory.GetFiles(s).Count() == 1 && !Directory.EnumerateFiles(s).Any(af => af.Contains("Thumbs")))//&& !Directory.GetFiles(s,"Thumbs*.*"))
+                else if (Directory.GetFiles(dir).Count() == 1 && !Directory.EnumerateFiles(dir).Any(af => af.Contains("Thumbs")))//&& !Directory.GetFiles(s,"Thumbs*.*"))
                 {
-                    ls.Add(s.Substring(31));
+                    foldMod.name = dir.Substring(31);
+                    foldMod.count = Directory.GetFiles(dir).Count();
+                    ls.Add(foldMod);
                 }
             }
-            
-            
-
-            //Console.WriteLine("--------------------------");
-
-            //Console.WriteLine("Checking for GA016KVA027 : \n");
-
-            //foreach (string s in Directory.GetDirectories(@"\\GA016KVA027\Inbound\"))
-            //{
-            //    string[] fileEntries = Directory.GetFiles(s);
-            //    foreach (string g in fileEntries)
-            //    {
-            //        if (fileEntries.Count() > 1 || (fileEntries.Count() == 1 && !g.Contains("Thumbs.db")))
-            //        {
-            //            Console.WriteLine(s + "_____Count : " + fileEntries.Count());
-            //            count = 2;
-            //            break;
-            //        }
-            //    }
-            //}
-            //if (count != 2)
-            //{
-            //    Console.WriteLine("NO FILES PRESENT \n");
-            //}
-            //Console.WriteLine("\n_______________________________________________________________________");
-            //Console.WriteLine("````````````````````````````````````````````````````````````````````````");
             return ls;
         }
 

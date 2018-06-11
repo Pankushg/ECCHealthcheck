@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Web;
 
 namespace ECCHealthcheck.Models
 {
-    public class folderModel
+    public class tasksModel
     {
+        public int id { get; set; }
         public string name { get; set; }
-        public int count { get; set; }
     }
 }
