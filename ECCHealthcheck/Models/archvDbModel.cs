@@ -8,7 +8,7 @@ namespace ECCHealthcheck.Models
 {
     public class archvDbModel
     {
-        public archvJbModel importDb { get; set; }
-        public archvJbModel xportDb { get; set; }
+        public DateTime archvDttm { get; set; }
+        public int archvCnt { get; set; }
     }
 }
