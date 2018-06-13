@@ -12,53 +12,52 @@ namespace ECCHealthcheck.Controllers
     public class archvJobController : ApiController
     {
         // GET: api/archvJob
-        public IEnumerable<archvJbModel> Get()
+        public string Get()
         {
-            List<archvDbModel> myArchvDbImpList = new List<archvDbModel>();
-            List<archvDbModel> myArchvDbXpList = new List<archvDbModel>();
+            return "Hello";
+        }
+
+        // GET: api/archvJob/5
+        public IEnumerable<archvDbModel> Get(string id)
+        {
             List<archvDbModel> myArchvDbList = new List<archvDbModel>();
 
             SqlConnection myMasterCon = new SqlConnection("Server=GA016VSQL0E7 ;Database = Master ; User Id = uzpisq1 ; password = imgwrite");
             try
             {
                 myMasterCon.Open();
-                SqlCommand myCmdXp = new SqlCommand("select COUNT(*),ARCHV_DTTM from[ECCXport_Data_Hst].[dbo].[T_BAT] where ARCHV_DTTM > DATEADD(d, -5, getdate()) group by ARCHV_DTTM order by ARCHV_DTTM desc", myMasterCon);
-                SqlCommand myCmdImp = new SqlCommand("select COUNT(*),ARCHV_DTTM from[ECCImport_Data_HST].[dbo].[T_BAT] where ARCHV_DTTM > DATEADD(d, -4, getdate()) group by ARCHV_DTTM order by ARCHV_DTTM desc", myMasterCon);
+                string conStr = "";
+                switch (id)
+                {
+                    case "Import":
+                        conStr = "select COUNT(*),ARCHV_DTTM from[ECCImport_Data_HST].[dbo].[T_BAT] where ARCHV_DTTM > DATEADD(d, -4, getdate()) group by ARCHV_DTTM order by ARCHV_DTTM desc";
+                        break;
+                    case "Xport":
+                        conStr = "select COUNT(*),ARCHV_DTTM from[ECCXport_Data_Hst].[dbo].[T_BAT] where ARCHV_DTTM > DATEADD(d, -5, getdate()) group by ARCHV_DTTM order by ARCHV_DTTM desc";
+                        break;
+                    default:
+                        break;
+                }
 
-                SqlDataReader myReadImp = myCmdImp.ExecuteReader();
+                SqlCommand myCmd = new SqlCommand(conStr, myMasterCon);
 
-                while (myReadImp.Read())
+                SqlDataReader myRead = myCmd.ExecuteReader();
+
+                while (myRead.Read())
                 {
                     archvDbModel myArchvDbModel = new archvDbModel();
-                    myArchvDbModel.importDb.archvDttm = myReadImp.GetDateTime(1);
-                    myArchvDbModel.importDb.archvCnt = myReadImp.GetInt32(0);
+                    myArchvDbModel.archvDttm = myRead.GetDateTime(1);
+                    myArchvDbModel.archvCnt = myRead.GetInt32(0);
                     myArchvDbList.Add(myArchvDbModel);
                 }
-                myReadImp.Close();
-
-                SqlDataReader myReadXp = myCmdXp.ExecuteReader();
-
-                Console.WriteLine("\n---------XPORT----------\nCount \t\t Archival Dttm\n");
-
-                while (myReadXp.Read())
-                {
-                    Console.WriteLine(myReadXp.GetInt32(0).ToString() + "\t\t" + myReadXp.GetDateTime(1));
-                }
-
-                myReadXp.Close();
+                myRead.Close();
                 myMasterCon.Close();
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                myArchvDbList.Add(new archvDbModel { archvCnt = 0, archvDttm = System.DateTime.Now });
             }
-            Console.ReadLine();
-        }
-
-        // GET: api/archvJob/5
-        public string Get(int id)
-        {
-            return "value";
+            return myArchvDbList;
         }
 
         // POST: api/archvJob
